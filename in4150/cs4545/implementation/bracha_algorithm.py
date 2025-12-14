@@ -45,12 +45,7 @@ class BrachaMessage:
 class BrachaAlgorithm(DolevAlgorithm):
     def __init__(self, settings: CommunitySettings) -> None:
         super().__init__(settings)
-
-        # Override debug algorithm if not explicitly set for Bracha
-        # This allows seeing Bracha logs by default when using Bracha algorithm
-        if self.debug_algorithm == 'all':
-            self.debug_algorithm = os.getenv('DEBUG_ALGORITHM', 'all')
-
+                
         # Optimization flags
         self.opt_echo_amplification = os.getenv('OPT_ECHO_AMPLIFICATION', 'false').lower() == 'true'
         self.opt_single_hop_send = os.getenv('OPT_SINGLE_HOP_SEND', 'false').lower() == 'true'
@@ -309,7 +304,7 @@ class BrachaAlgorithm(DolevAlgorithm):
 
         # Upon 2f+1 READYs, deliver
         if len(self.readys[msg_key]) >= 2 * self.f + 1 and not self.bracha_delivered.get(msg_key, False):
-            await self._brb_deliver(msg)
+            await self.brb_deliver(msg)
 
     async def _send_ready(self, msg: BrachaMessage) -> None:
         """Send READY message to all nodes"""
@@ -327,7 +322,7 @@ class BrachaAlgorithm(DolevAlgorithm):
 
         await self.rc_broadcast(ready_msg.to_json())
 
-    async def _brb_deliver(self, msg: BrachaMessage) -> None:
+    async def brb_deliver(self, msg: BrachaMessage) -> None:
         msg_key = msg.key
         self.bracha_delivered[msg_key] = True
 
