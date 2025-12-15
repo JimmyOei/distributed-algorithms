@@ -69,14 +69,11 @@ class RCOAlgorithm(BrachaAlgorithm):
             await super().brb_deliver(msg)
             return
 
-        # Byzantine Behavior 3: Message Dropping at RCO layer
-        # Selectively drop messages to disrupt causal delivery
+        # Byzantine Behavior: Message Dropping at RCO layer
         if self.byzantine_behavior == 'rco_drop_messages':
-            import random
-            if random.random() < 0.5:  # Drop 50% of messages
-                if self.debug_mode >= 1:
-                    print(f"[BYZANTINE-RCO] Node {self.node_id}: Dropping message from {rco_msg.sender_id}: \"{rco_msg.content}\"")
-                return  # Drop the message
+            if self.debug_mode >= 1:
+                print(f"[BYZANTINE-RCO] Node {self.node_id}: Dropping message from {rco_msg.sender_id}: \"{rco_msg.content}\"")
+            return  # Drop the message
 
         if rco_msg.sender_id != self.node_id and not self.rco_delivered.get(rco_msg.key, False):
             self.pending.add((rco_msg.sender_id, rco_msg.content, rco_msg.vector_clock))
@@ -97,7 +94,7 @@ class RCOAlgorithm(BrachaAlgorithm):
 
         vector_clock_to_send = tuple(self.vector_clock)
 
-        # Byzantine Behavior 1: Vector Clock Inflation
+        # Byzantine Behavior: Vector Clock Inflation
         # Send messages with inflated vector clocks to delay delivery at correct nodes
         if self.byzantine_behavior == 'vc_inflation':
             inflated_vc = [vc + 10 for vc in self.vector_clock]
@@ -105,7 +102,7 @@ class RCOAlgorithm(BrachaAlgorithm):
             if self.debug_mode >= 1:
                 print(f"[BYZANTINE-RCO] Node {self.node_id}: Inflating VC from {self.vector_clock} to {inflated_vc}")
 
-        # Byzantine Behavior 2: Vector Clock Deflation/Forgery
+        # Byzantine Behavior: Vector Clock Deflation/Forgery
         # Send messages with zero or minimal vector clocks to bypass causal order
         elif self.byzantine_behavior == 'vc_deflation':
             deflated_vc = [0] * self.num_nodes

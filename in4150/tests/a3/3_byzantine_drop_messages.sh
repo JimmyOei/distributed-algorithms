@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Test Byzantine behavior: Message Dropping at RCO layer
-# A Byzantine node selectively drops messages at the RCO layer,
-# preventing correct nodes from delivering messages
-
-NUM_NODES=5
+NUM_NODES=10
 NUM_FAULTS=1
 NUM_BYZANTINE=1
 BYZANTINE_BEHAVIOR="rco_drop_messages"
-BROADCASTERS=1  # One correct broadcaster
+BROADCASTERS=1
 BROADCASTS=3
 MIN_MESSAGE_DELAY=0.05
 MAX_MESSAGE_DELAY=0.15

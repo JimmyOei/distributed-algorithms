@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# Test Byzantine behavior: Vector Clock Inflation
-# A Byzantine node inflates its vector clock values, causing correct nodes
-# to delay delivery of its messages indefinitely
-
-NUM_NODES=5
+NUM_NODES=10
 NUM_FAULTS=1
-NUM_BYZANTINE=1
+NUM_BYZANTINE=0 # The broadcasters are byzantine
 BYZANTINE_BEHAVIOR="vc_inflation"
-BROADCASTERS=2  # Byzantine and one correct broadcaster
-BROADCASTS=2
+BROADCASTERS=1
+BROADCASTS=3
 MIN_MESSAGE_DELAY=0.05
 MAX_MESSAGE_DELAY=0.15
 CONNECTIVITY=3

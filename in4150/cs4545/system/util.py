@@ -84,7 +84,7 @@ def prepare_compose_file(num_nodes, topology_file, algorithm, faults, num_byzant
 
             if i in broadcaster_nodes:
                 n['environment']['NUM_BROADCASTS'] = broadcasts
-                if byzantine_behavior == 'limited_broadcast':
+                if byzantine_behavior == 'limited_broadcast' or byzantine_behavior == 'vc_deflation' or byzantine_behavior == 'vc_inflation':
                     n['environment']['BYZANTINE_BEHAVIOR'] = byzantine_behavior
                     n['environment']['LIMITED_NEIGHBORS'] = limited_neighbors
             else:

@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Test Byzantine behavior: Vector Clock Deflation
-# A Byzantine node sends messages with deflated (zero) vector clocks,
-# attempting to bypass causal order checks and deliver out of order
-
-NUM_NODES=5
+NUM_NODES=10
 NUM_FAULTS=1
-NUM_BYZANTINE=1
+NUM_BYZANTINE=0 # The broadcasters are byzantine
 BYZANTINE_BEHAVIOR="vc_deflation"
-BROADCASTERS=2  # Byzantine and one correct broadcaster
+BROADCASTERS=1
 BROADCASTS=3
 MIN_MESSAGE_DELAY=0.05
 MAX_MESSAGE_DELAY=0.15
