@@ -4,10 +4,10 @@ NUM_NODES=10
 NUM_FAULTS=1
 NUM_BYZANTINE=0
 BYZANTINE_BEHAVIOR="none"
-BROADCASTERS=1
-BROADCASTS=3
+BROADCASTERS=3  # Multiple broadcasters sending concurrently
+BROADCASTS=2    # Each broadcaster sends multiple messages
 MIN_MESSAGE_DELAY=0.05
-MAX_MESSAGE_DELAY=0.15
+MAX_MESSAGE_DELAY=0.2  # Higher delay variation to encourage different orderings
 CONNECTIVITY=3
 DEBUG_MODE=1
 DEBUG_ALGORITHM="rco"
@@ -34,7 +34,7 @@ fi
 
 docker compose build
 
-LOG_FILE="causality.log"
+LOG_FILE="no_total_order.log"
 echo "Running test and capturing logs to $LOG_FILE..."
 
 docker compose up 2>&1 | tee $LOG_FILE

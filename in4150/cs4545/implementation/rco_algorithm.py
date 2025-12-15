@@ -68,7 +68,16 @@ class RCOAlgorithm(BrachaAlgorithm):
             # If not a Bracha message, call parent's brb_deliver
             await super().brb_deliver(msg)
             return
-        
+
+        # Byzantine Behavior 3: Message Dropping at RCO layer
+        # Selectively drop messages to disrupt causal delivery
+        if self.byzantine_behavior == 'rco_drop_messages':
+            import random
+            if random.random() < 0.5:  # Drop 50% of messages
+                if self.debug_mode >= 1:
+                    print(f"[BYZANTINE-RCO] Node {self.node_id}: Dropping message from {rco_msg.sender_id}: \"{rco_msg.content}\"")
+                return  # Drop the message
+
         if rco_msg.sender_id != self.node_id and not self.rco_delivered.get(rco_msg.key, False):
             self.pending.add((rco_msg.sender_id, rco_msg.content, rco_msg.vector_clock))
             if self.debug_mode >= 2 and self.debug_algorithm in ['all', 'rco']:
@@ -86,10 +95,28 @@ class RCOAlgorithm(BrachaAlgorithm):
             print(f"[RCO-BROADCAST] Node {self.node_id}: Broadcasting message [{self.node_id}: \"{msg_content}\"]")
         await self.rco_deliver(self.node_id, msg_content)
 
+        vector_clock_to_send = tuple(self.vector_clock)
+
+        # Byzantine Behavior 1: Vector Clock Inflation
+        # Send messages with inflated vector clocks to delay delivery at correct nodes
+        if self.byzantine_behavior == 'vc_inflation':
+            inflated_vc = [vc + 10 for vc in self.vector_clock]
+            vector_clock_to_send = tuple(inflated_vc)
+            if self.debug_mode >= 1:
+                print(f"[BYZANTINE-RCO] Node {self.node_id}: Inflating VC from {self.vector_clock} to {inflated_vc}")
+
+        # Byzantine Behavior 2: Vector Clock Deflation/Forgery
+        # Send messages with zero or minimal vector clocks to bypass causal order
+        elif self.byzantine_behavior == 'vc_deflation':
+            deflated_vc = [0] * self.num_nodes
+            vector_clock_to_send = tuple(deflated_vc)
+            if self.debug_mode >= 1:
+                print(f"[BYZANTINE-RCO] Node {self.node_id}: Deflating VC from {self.vector_clock} to {deflated_vc}")
+
         rco_msg = RCOMessage(
             sender_id=self.node_id,
             content=msg_content,
-            vector_clock=tuple(self.vector_clock),
+            vector_clock=vector_clock_to_send,
         )
         await self.brb_broadcast(rco_msg.to_json())
 

@@ -1,10 +1,14 @@
 #!/bin/bash
 
-NUM_NODES=10
+# Test Byzantine behavior: Message Dropping at RCO layer
+# A Byzantine node selectively drops messages at the RCO layer,
+# preventing correct nodes from delivering messages
+
+NUM_NODES=5
 NUM_FAULTS=1
-NUM_BYZANTINE=0
-BYZANTINE_BEHAVIOR="none"
-BROADCASTERS=1
+NUM_BYZANTINE=1
+BYZANTINE_BEHAVIOR="rco_drop_messages"
+BROADCASTERS=1  # One correct broadcaster
 BROADCASTS=3
 MIN_MESSAGE_DELAY=0.05
 MAX_MESSAGE_DELAY=0.15
@@ -34,7 +38,7 @@ fi
 
 docker compose build
 
-LOG_FILE="causality.log"
+LOG_FILE="byzantine_drop_messages.log"
 echo "Running test and capturing logs to $LOG_FILE..."
 
 docker compose up 2>&1 | tee $LOG_FILE

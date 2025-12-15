@@ -1,11 +1,15 @@
 #!/bin/bash
 
-NUM_NODES=10
+# Test Byzantine behavior: Vector Clock Inflation
+# A Byzantine node inflates its vector clock values, causing correct nodes
+# to delay delivery of its messages indefinitely
+
+NUM_NODES=5
 NUM_FAULTS=1
-NUM_BYZANTINE=0
-BYZANTINE_BEHAVIOR="none"
-BROADCASTERS=1
-BROADCASTS=3
+NUM_BYZANTINE=1
+BYZANTINE_BEHAVIOR="vc_inflation"
+BROADCASTERS=2  # Byzantine and one correct broadcaster
+BROADCASTS=2
 MIN_MESSAGE_DELAY=0.05
 MAX_MESSAGE_DELAY=0.15
 CONNECTIVITY=3
@@ -34,7 +38,7 @@ fi
 
 docker compose build
 
-LOG_FILE="causality.log"
+LOG_FILE="byzantine_vc_inflation.log"
 echo "Running test and capturing logs to $LOG_FILE..."
 
 docker compose up 2>&1 | tee $LOG_FILE
